@@ -22,7 +22,7 @@ JSLint version 2013-07-31 is included.
 Installation
 ------------
 
-Install from this Eclipse update site: http://internal.weightpoint.se/jslint-eclipse/updates/
+Install from this Eclipse update site: http://weightpoint.github.io/jslint-eclipse/updates/
 
 License
 -------
