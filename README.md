@@ -24,6 +24,11 @@ Installation
 
 Install from this Eclipse update site: http://weightpoint.github.io/jslint-eclipse/updates/
 
+Contributions
+------------
+Submissions are very welcome!
+
+
 License
 -------
 
