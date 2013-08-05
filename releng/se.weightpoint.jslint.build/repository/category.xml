@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="../se.weightpoint.jslint.feature" id="se.weightpoint.jslint.feature" version="0.0.1.qualifier">
+      <category name="se.weightpoint.jslint"/>
+   </feature>
+   <category-def name="se.weightpoint.jslint" label="JSLint">
+      <description>
+         JSLint Integration for Eclipse
+      </description>
+   </category-def>
+</site>

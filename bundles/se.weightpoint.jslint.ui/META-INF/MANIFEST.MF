@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JSLint Eclipse Integration
+Bundle-SymbolicName: se.weightpoint.jslint.ui;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: se.weightpoint.jslint.ui.internal.Activator
+Bundle-Vendor: EclipseSource
+Require-Bundle: org.eclipse.ui;bundle-version="3.6.0",
+ org.eclipse.core.runtime;bundle-version="3.6.0",
+ org.eclipse.core.resources;bundle-version="3.6.0",
+ se.weightpoint.jslint
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+Import-Package: se.weightpoint.jslint;version="[0.0.1,1.0.0)"
+Export-Package: se.weightpoint.jslint.ui.internal;version="0.0.1";x-internal:=true,
+ se.weightpoint.jslint.ui.internal.builder;version="0.0.1";x-internal:=true,
+ se.weightpoint.jslint.ui.internal.preferences;version="0.0.1";x-internal:=true,
+ se.weightpoint.jslint.ui.internal.preferences.ui;version="0.0.1";x-internal:=true

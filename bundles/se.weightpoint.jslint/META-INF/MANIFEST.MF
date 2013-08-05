@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JSLint
+Bundle-SymbolicName: se.weightpoint.jslint
+Bundle-Version: 0.0.1.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Vendor: EclipseSource
+Bundle-ActivationPolicy: lazy
+Export-Package: se.weightpoint.jslint;version="0.0.1",
+ se.weightpoint.jslint.internal;version="0.0.1";x-friends:="se.weightpoint.jslint.test",
+ se.weightpoint.jslint.json;version="0.0.1"
+Require-Bundle: org.mozilla.javascript;bundle-version="1.7.4"

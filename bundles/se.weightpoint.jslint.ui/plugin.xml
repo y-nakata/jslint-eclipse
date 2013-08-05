@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            id="se.weightpoint.jslint.ui.properties.projectPropertyPage"
+            class="se.weightpoint.jslint.ui.internal.preferences.ui.ProjectPropertyPage"
+            name="JSLint">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IResource">
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="se.weightpoint.jslint.ui.properties.projectPropertyPage"
+            class="se.weightpoint.jslint.ui.internal.preferences.ui.OptionsPropertyPage"
+            id="se.weightpoint.jslint.ui.properties.optionsPropertyPage"
+            name="Options">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IResource">
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="se.weightpoint.jslint.ui.internal.preferences.ui.JSLintPreferencePage"
+            id="se.weightpoint.jslint.ui.mainPreferencePage"
+            name="JSLint">
+      </page>
+      <page
+            category="se.weightpoint.jslint.ui.mainPreferencePage"
+            class="se.weightpoint.jslint.ui.internal.preferences.ui.OptionsPreferencePage"
+            id="se.weightpoint.jslint.ui.optionsPreferencePage"
+            name="Options">
+      </page>
+   </extension>
+   <extension
+         id="builder"
+         name="JSLint Problem Checker"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="false"
+            hasNature="false"
+            isConfigurable="false"
+            supportsConfigurations="false">
+         <run
+               class="se.weightpoint.jslint.ui.internal.builder.JSLintBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="problemmarker"
+         name="JSLint Problem"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="true">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+   </extension>
+
+</plugin>

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for JSLint Eclipse Integration
+Bundle-SymbolicName: se.weightpoint.jslint.test
+Bundle-Version: 0.0.1.qualifier
+Fragment-Host: se.weightpoint.jslint;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.junit;version="4.8.2",
+ org.junit.runner;version="4.8.2",
+ org.junit.runners;version="4.8.2"
+Bundle-Vendor: EclipseSource
+Require-Bundle: org.hamcrest.core;bundle-version="1.1.0"

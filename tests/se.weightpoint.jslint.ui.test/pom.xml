@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>se.weightpoint.jslint</groupId>
+  <artifactId>se.weightpoint.jslint.ui.test</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>eclipse-test-plugin</packaging>
+
+  <parent>
+    <groupId>se.weightpoint.jslint</groupId>
+    <artifactId>se.weightpoint.jslint.releng</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../../releng/se.weightpoint.jslint.build/pom.xml</relativePath>
+  </parent>
+
+</project>
