@@ -34,7 +34,7 @@ public class TestUtil {
   public static final String SETTINGS_FOLDER_PATH = "/.settings";
   public static final String OLD_SETTINGS_FILE_NAME = "se.weightpoint.jslint.prefs";
   public static final String SETTINGS_FILE_NAME = "se.weightpoint.jslint.ui.prefs";
-  public static final String SETTINGS_TEMPLATE_0_9 = "jslint-0.9.prefs";
+  public static final String SETTINGS_TEMPLATE = "jslint.prefs";
 
   private TestUtil() {
   }

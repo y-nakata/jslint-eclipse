@@ -50,7 +50,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void enablementPrefsFromExampleSettingsFile() throws Exception {
-    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
+    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE );
 
     EnablementPreferences prefs = new EnablementPreferences( node );
 
@@ -59,9 +59,10 @@ public class ProjectPreferences_Test {
     assertFalse( prefs.hasChanged() );
   }
 
+  
   @Test
   public void optionPrefsFromExampleSettingsFile() throws Exception {
-    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
+    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE );
 
     OptionsPreferences optionPrefs = new OptionsPreferences( node );
 

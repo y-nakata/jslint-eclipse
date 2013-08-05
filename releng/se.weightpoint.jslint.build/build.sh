@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MVN=$HOME/bin/mvn
-BUILD_TARGET_DIR=/tmp/jshint-eclipse
+BUILD_TARGET_DIR=/tmp/jslint-eclipse
 
 # path that are relevant for effective commit
 includePaths="bundles/se.weightpoint.jslint bundles/se.weightpoint.jslint.ui releng/se.weightpoint.jslint.feature"
@@ -44,7 +44,7 @@ if [ -n "$commit_hash" ]; then
   echo "Version: $version"
   
   mkdir -p $BUILD_TARGET_DIR
-  rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version
-  cp repository/target/se.weightpoint.jslint.repository-*.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
+  rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jslint-eclipse-$version
+  cp repository/target/se.weightpoint.jslint.repository-*.zip $BUILD_TARGET_DIR/jslint-eclipse-$version.zip
 fi
 

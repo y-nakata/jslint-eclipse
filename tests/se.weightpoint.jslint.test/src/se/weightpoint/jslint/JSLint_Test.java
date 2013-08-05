@@ -10,342 +10,191 @@
  ******************************************************************************/
 package se.weightpoint.jslint;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.JavaScriptException;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import se.weightpoint.jslint.JSLint;
 import se.weightpoint.jslint.Problem;
 import se.weightpoint.jslint.ProblemHandler;
-import se.weightpoint.jslint.Text;
 import se.weightpoint.jslint.json.JsonObject;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 
+@RunWith( value = Parameterized.class )
 public class JSLint_Test {
 
-  private List<Problem> problems;
+  private ArrayList<Problem> problems;
   private TestHandler handler;
+  private final String jsLintResource;
   private JSLint jsLint;
+
+  @Parameters
+  public static Collection<Object[]> getParameters() {
+    ArrayList<Object[]> parameters = new ArrayList<Object[]>();
+    parameters.add( new Object[] { "com/jslint/jslint-2012-02-03.js" } );
+    parameters.add( new Object[] { "com/jslint/jslint-2013-07-31.js" } );
+    return parameters;
+  }
+
+  public JSLint_Test( String jsLintResource ) {
+    this.jsLintResource = jsLintResource;
+  }
 
   @Before
   public void setUp() throws IOException {
     problems = new ArrayList<Problem>();
-    handler = new TestHandler( problems );
+    handler = new TestHandler();
     jsLint = new JSLint();
-    jsLint.load();
+    loadJsLint();
   }
 
   @Test
-  public void getDefaultVersion() {
-    String version = JSLint.getDefaultLibraryVersion();
+  public void noProblemsForValidCode() {
+    jsLint.check( "var a = 23;", handler );
 
-    assertTrue( version.matches( "\\d+\\.\\d+\\.\\d+" ) );
-  }
-
-  @Test( expected = NullPointerException.class )
-  public void configureWithNull() {
-    jsLint.configure( null );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
-  public void configureBeforeLoad() throws Exception {
-    JsonObject configuration = new JsonObject().add( "undef", true );
+  public void problemLineIs_1_Relative() {
+    jsLint.check( "#", handler );
 
-    JSLint jsLint = new JSLint();
-    jsLint.configure( configuration );
-    jsLint.load();
-    jsLint.check( "x = 23;", handler );
-
-    assertEquals( "'x' is not defined", problems.get( 0 ).getMessage() );
+    assertEquals( 1, problems.get( 0 ).getLine() );
   }
 
   @Test
-    public void loadBeforeConfigure() throws Exception {
-    JsonObject configuration = new JsonObject().add( "undef", true );
+  public void problemCharacterIs_0_Relative() {
+    jsLint.check( "#", handler );
 
-    JSLint jsLint = new JSLint();
-    jsLint.load();
-    jsLint.configure( configuration );
-    jsLint.check( "x = 23;", handler );
-
-    assertEquals( "'x' is not defined", problems.get( 0 ).getMessage() );
-  }
-
-  @Test( expected = IllegalStateException.class )
-  public void checkWithoutLoad() {
-    JSLint jsLint = new JSLint();
-    jsLint.check( "code", handler );
-  }
-
-  @Test( expected = NullPointerException.class )
-  public void checkWithNullCode() {
-    jsLint.check( (String)null, handler );
-  }
-
-  @Test( expected = NullPointerException.class )
-  public void checkWithNullText() {
-    jsLint.check( (Text)null, handler );
+    assertEquals( 0, problems.get( 0 ).getCharacter() );
   }
 
   @Test
-  public void checkWithNullHandler() {
-    assertTrue( jsLint.check( "var a = 23;", null ) );
-    assertFalse( jsLint.check( "HMPF!", null ) );
-  }
+  public void cproblemMessageIsNotEmpty() {
+    jsLint.check( "#", handler );
 
-  @Test( expected = NullPointerException.class )
-  public void loadCustomWithNullParameter() throws Exception {
-    JSLint jsLint = new JSLint();
-    jsLint.load( null );
+    assertTrue( problems.get( 0 ).getMessage().length() > 0 );
   }
 
   @Test
-  public void loadCustomWithEmptyFile() throws Exception {
-    JSLint jsLint = new JSLint();
-    try {
-      jsLint.load( new ByteArrayInputStream( "".getBytes() ) );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertEquals( "Global JSLINT function missing in input", exception.getMessage() );
-    }
+  public void undefinedVariable_withoutConfig_succeeds() {
+    jsLint.check( "foo = {};", handler );
+
+    // seems that the undef option is inverted in jslint
+    String expected = "1.0:'foo' was used before it was defined";
+    assertEquals( expected, getAllProblems() );
+  }
+
+
+  @Test
+  public void undefinedVariable_withPredefInConfig_succeeds() {
+    JsonObject predefined = new JsonObject().add( "foo", true );
+    jsLint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ) );
+
+    jsLint.check( "foo = {};", handler );
+
+    assertEquals( "", getAllProblems() );
   }
 
   @Test
-  public void loadCustomWithWrongJsFile() throws Exception {
-    JSLint jsLint = new JSLint();
-    try {
-      jsLint.load( new ByteArrayInputStream( "var a = 23;".getBytes() ) );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertEquals( "Global JSLINT function missing in input", exception.getMessage() );
-    }
+  public void undefinedVariable_withReadOnlyPredefInConfig_fails() {
+    // FIXME [rst] See https://github.com/jshint/jshint/issues/665
+    assumeTrue( !isVersion( "r10" ) && !isVersion( "r11" ) && !isVersion( "r12" ) );
+    JsonObject predefined = new JsonObject().add( "foo", false );
+    jsLint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ) );
+
+    jsLint.check( "foo = {};", handler );
+
+    assertEquals( "1.0:Read only", getAllProblems() );
   }
 
   @Test
-  public void loadCustomWithFakeJsLintFile() throws Exception {
-    JSLint jsLint = new JSLint();
-    try {
-      jsLint.load( new ByteArrayInputStream( "JSLINT = {};".getBytes() ) );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertEquals( "Global JSLINT is not a function", exception.getMessage() );
-    }
+  public void eqnull_withoutConfig() {
+    jsLint.check( "var x = 23 == null;", handler );
+
+    String expected = "Expected '===' and instead saw '=='";
+    assertEquals( "1.11:" + expected, getAllProblems() );
   }
 
   @Test
-  public void loadCustomWithEcmaException() throws Exception {
-    JSLint jsLint = new JSLint();
-    try {
-      jsLint.load( new ByteArrayInputStream( "JSLINT = foo;".getBytes() ) );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertEquals( "Could not evaluate JavaScript input", exception.getMessage() );
-    }
+  public void eqnull_withEmptyConfig() {
+    jsLint.configure( new JsonObject() );
+
+    jsLint.check( "var x = 23 == null;", handler );
+
+    String expected = "Expected '===' and instead saw '=='";
+    assertEquals( "1.11:" + expected, getAllProblems() );
   }
 
-  @Test
-  public void loadCustomWithGarbage() throws Exception {
-    JSLint jsLint = new JSLint();
-    try {
-      jsLint.load( new ByteArrayInputStream( "cheese! :D".getBytes() ) );
-      fail();
-    } catch( IllegalArgumentException exception ) {
-      assertEquals( "Could not evaluate JavaScript input", exception.getMessage() );
-    }
-  }
+
 
   @Test
-  public void loadCustom() throws Exception {
-    JSLint jsLint = new JSLint();
+  public void positionIsCorrect() {
+    jsLint.check( "var x = 23 == null;", handler );
+
+    assertEquals( "1.11", getPositionFromProblem( 0 ) );
+  }
+
+
+
+  
+  @Test
+  public void toleratesWindowsLineBreaks() {
+    jsLint.configure( new JsonObject().add( "white", false ) );
+    jsLint.check( "var x = 1;\r\nvar y = 2;\r\nvar z = 23 == null;", handler );
+
+    assertEquals( "3.11", getPositionFromProblem( 0 ) );
+  }
+
+  private void loadJsLint() throws IOException {
     ClassLoader classLoader = getClass().getClassLoader();
-    InputStream stream = classLoader.getResourceAsStream( "com/jshint/jshint-r03.js" );
+    InputStream stream = classLoader.getResourceAsStream( jsLintResource );
     try {
       jsLint.load( stream );
     } finally {
       stream.close();
     }
-
-    jsLint.check( "cheese! :D", handler );
-
-    assertFalse( problems.isEmpty() );
   }
 
-  @Test
-  public void checkWithEmptyCode() {
-    boolean result = jsLint.check( "", handler );
-
-    assertTrue( result );
-    assertTrue( problems.isEmpty() );
+  private boolean isVersion( String version ) {
+    return jsLintResource.contains( version );
   }
 
-  @Test
-  public void checkWithOnlyWhitespace() {
-    boolean result = jsLint.check( " ", handler );
-
-    assertTrue( result );
-    assertTrue( problems.isEmpty() );
+  private String getPositionFromProblem( int n ) {
+    Problem problem = problems.get( n );
+    return problem.getLine() + "." + problem.getCharacter();
   }
 
-  @Test
-  public void checkWithValidCode() {
-    boolean result = jsLint.check( "var foo = 23;", handler );
-
-    assertTrue( result );
-    assertTrue( problems.isEmpty() );
-  }
-
-  @Test
-  public void checkWithFaultyCode() {
-    boolean result = jsLint.check( "cheese!", handler );
-
-    assertFalse( result );
-    assertFalse( problems.isEmpty() );
-  }
-
-  @Test
-  public void checkWithJavaScriptException() throws Exception {
-    JSLint jsLint = new JSLint();
-    jsLint.load( new ByteArrayInputStream( "JSLINT = function() { throw 'ERROR'; };".getBytes() ) );
-
-    try {
-      jsLint.check( "var a = 1;", handler );
-      fail();
-    } catch( RuntimeException exception ) {
-
-      String expected = "JavaScript exception thrown by JSLint: ERROR";
-      assertThat( exception.getMessage(), startsWith( expected ) );
-      assertSame( JavaScriptException.class, exception.getCause().getClass() );
+  private String getAllProblems() {
+    StringBuilder builder = new StringBuilder();
+    for( Problem problem : problems ) {
+      if( builder.length() > 0 ) {
+        builder.append( ", " );
+      }
+      builder.append( problem.getLine() );
+      builder.append( '.' );
+      builder.append( problem.getCharacter() );
+      builder.append( ':' );
+      builder.append( problem.getMessage() );
     }
+    return builder.toString();
   }
 
-  @Test
-  public void checkWithRhinoException() throws Exception {
-    JSLint jsLint = new JSLint();
-    jsLint.load( new ByteArrayInputStream( "JSLINT = function() { throw x[ 0 ]; };".getBytes() ) );
-
-    try {
-      jsLint.check( "var a = 1;", handler );
-      fail();
-    } catch( RuntimeException exception ) {
-
-      String expected = "JavaScript exception caused by JSLint: ReferenceError";
-      assertThat( exception.getMessage(), startsWith( expected ) );
-      assertSame( EcmaError.class, exception.getCause().getClass() );
-    }
-  }
-
-  @Test
-  public void noErrorsWithoutConfig() {
-    // undefined variable is only reported with 'undef' in config
-    jsLint.check( "var f = function () { v = {}; };", handler );
-
-    assertTrue( problems.isEmpty() );
-  }
-
-  @Test
-  public void noErrorsWithEmptyConfig() {
-    // undefined variable is only reported with 'undef' in config
-    jsLint.configure( new JsonObject() );
-
-    jsLint.check( "var f = function () { v = {}; };", handler );
-
-    assertTrue( problems.isEmpty() );
-  }
-
-  @Test
-  public void errorWithUndefInConfig() {
-    jsLint.configure( new JsonObject().add( "undef", true ) );
-
-    jsLint.check( "var f = function () { v = {}; };", handler );
-
-    assertThat( problems.get( 0 ).getMessage(), containsString( "'v' is not defined" ) );
-  }
-
-  @Test
-  public void errorAfterTabHasCorrectPosition() {
-    jsLint.configure( new JsonObject().add( "undef", true ) );
-
-    jsLint.check( "var x = 1,\t# y = 2;", handler );
-
-    assertEquals( 11, problems.get( 0 ).getCharacter() );
-  }
-
-  @Test
-  public void errorAtEndDoesNotThrowException() {
-    jsLint.configure( new JsonObject().add( "undef", true ) );
-
-    // Must not throw SIOOBE
-    // See https://github.com/eclipsesource/jshint-eclipse/issues/34
-    jsLint.check( "var x = 1;\t#", handler );
-  }
-
-  @Test
-  public void checkSameInputTwice() {
-    jsLint.configure( new JsonObject().add( "undef", true ) );
-    LoggingHandler handler1 = new LoggingHandler();
-    LoggingHandler handler2 = new LoggingHandler();
-
-    jsLint.check( "var x = 1;\t#", handler1 );
-    jsLint.check( "var x = 1;\t#", handler2 );
-
-    assertTrue( handler1.toString().length() > 0 );
-    assertEquals( handler1.toString(), handler2.toString() );
-  }
-
-  @Test
-  public void checkMultipleFiles() {
-    // see https://github.com/jshint/jshint/issues/931
-    jsLint.configure( new JsonObject().add( "undef", true ) );
-
-    jsLint.check( "var x = 1;\t#", handler );
-    jsLint.check( "var x = 1;\t#", handler );
-    jsLint.check( "var x = 1;\t#", handler );
-    jsLint.check( "var x = 1;\t#", handler );
-    jsLint.check( "var x = 1;\t#", handler );
-  }
-
-  private static class LoggingHandler implements ProblemHandler {
-
-    StringBuilder log = new StringBuilder();
-
-    public void handleProblem( Problem problem ) {
-      log.append( problem.getLine() );
-      log.append( ':' );
-      log.append( problem.getCharacter() );
-      log.append( ':' );
-      log.append( problem.getMessage() );
-      log.append( '\n' );
-    }
-
-    @Override
-    public String toString() {
-      return log.toString();
-    }
-
-  }
-
-  private static class TestHandler implements ProblemHandler {
-
-    private final List<Problem> problems;
-
-    public TestHandler( List<Problem> problems ) {
-      this.problems = problems;
-    }
+  private class TestHandler implements ProblemHandler {
 
     public void handleProblem( Problem problem ) {
       problems.add( problem );
     }
-
   }
 
 }

@@ -25,7 +25,7 @@ http://www.eclipse.org/legal/epl-v10.html
    </license>
 
    <url>
-      <update url="http://github.eclipsesource.com/jshint-eclipse/updates/"/>
+      <update url="http://internal.weightpoint.se/jslint-eclipse/updates/"/>
    </url>
 
    <requires>

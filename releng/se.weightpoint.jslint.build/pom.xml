@@ -22,9 +22,9 @@
 
   <modules>
     <module>../../bundles/se.weightpoint.jslint</module>
-    <module>../../bundles/se.weightpoint.jslint.ui</module><!--
+    <module>../../bundles/se.weightpoint.jslint.ui</module>
     <module>../../tests/se.weightpoint.jslint.test</module>
-    <module>../../tests/se.weightpoint.jslint.ui.test</module>-->
+    <module>../../tests/se.weightpoint.jslint.ui.test</module>
     <module>../se.weightpoint.jslint.feature</module>
     <module>repository</module>
   </modules>
@@ -46,6 +46,11 @@
       <id>swtbot-repo</id>
       <layout>p2</layout>
       <url>http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site</url>
+    </repository>
+    <repository>
+      <id>mockito-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipsesource.com/~rsternberg/mockito-all/</url>
     </repository>
   </repositories>
 
