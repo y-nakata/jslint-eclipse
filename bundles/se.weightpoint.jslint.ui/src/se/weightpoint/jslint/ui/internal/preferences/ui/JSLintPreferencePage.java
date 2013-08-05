@@ -106,7 +106,7 @@ public class JSLintPreferencePage extends PreferencePage implements IWorkbenchPr
                               + ")" );
     defaultLibButton.setLayoutData( createFillData( 3 ) );
     customLibButton = new Button( parent, SWT.RADIO );
-    customLibButton.setText( "Provide a &custom JSLint library file (JSLint is also supported)" );
+    customLibButton.setText( "Provide a &custom JSLint library file" );
     customLibButton.setLayoutData( createFillData( 3 ) );
     customLibButton.addSelectionListener( new SelectionAdapter() {
       @Override
