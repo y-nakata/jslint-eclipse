@@ -5,7 +5,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <tycho-version>0.16.0</tycho-version>
+    <!-- <tycho-version>0.16.0</tycho-version> -->
+    <tycho-version>0.18.1</tycho-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -54,13 +55,15 @@
     </repository>
   </repositories>
 
+  <!-- This plugin repository is out of date.
   <pluginRepositories>
     <pluginRepository>
       <id>maven.eclipse.org</id>
       <url>http://maven.eclipse.org/nexus/content/repositories/milestone-indigo</url>
     </pluginRepository>
   </pluginRepositories>
-
+  -->
+  
   <build>
     <plugins>
 
